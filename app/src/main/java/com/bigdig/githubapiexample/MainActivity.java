@@ -17,6 +17,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity
     private Button btGetRepos;
 
     private List<Repo> repoList = new ArrayList<>();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,26 +68,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void updateRepos(String githubLogin){
-        GithubService.getApi().getUserRepos(githubLogin)
-                .enqueue(new Callback<List<Repo>>() {
-                    @Override
-                    public void onResponse(@NotNull Call<List<Repo>> call, @NotNull Response<List<Repo>> response) {
-                        Log.d(TAG, "onResponse: " + response.toString());
-                        if(response.code() == 200){
-                            List<Repo> repos = response.body();
-                            repoList.clear();
-                            repoList.addAll(repos);
-                            rvRepos.getAdapter().notifyDataSetChanged();
-                        } else {
-                            Toast.makeText(MainActivity.this,
-                                    "Error: " + response.message(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull Call<List<Repo>> call, @NotNull Throwable t) {
-                        Log.e(TAG, "onFailure: " + t.getMessage(), t);
-                    }
+        Disposable d = GithubService.getApi()
+                .getUserRepos(githubLogin)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(repoListResponse -> {
+                    repoList.clear();
+                    repoList.addAll(repoListResponse);
+                    rvRepos.getAdapter().notifyDataSetChanged();
+                }, error -> {
+                    Log.e("mLog", "Error: " + error.getMessage());
                 });
+        compositeDisposable.add(d);
+    }
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
     }
 }
