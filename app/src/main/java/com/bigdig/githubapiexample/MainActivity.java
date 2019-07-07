@@ -1,18 +1,16 @@
 package com.bigdig.githubapiexample;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.bigdig.githubapiexample.api.GithubService;
 import com.bigdig.githubapiexample.model.Repo;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +19,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity
                             implements View.OnClickListener{
@@ -51,9 +46,7 @@ public class MainActivity extends AppCompatActivity
         RepositoryAdapter adapter = new RepositoryAdapter(repoList);
         rvRepos.setAdapter(adapter);
         rvRepos.setLayoutManager(
-                new LinearLayoutManager(this,
-                        LinearLayoutManager.VERTICAL,
-                        false)
+                new LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         );
     }
 

@@ -1,8 +1,4 @@
-package com.bigdig.githubapiexample;
-
-import android.content.Context;
-
-import com.google.gson.Gson;
+package com.bigdig.githubapiexample.api;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
