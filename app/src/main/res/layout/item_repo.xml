@@ -2,10 +2,35 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="?attr/selectableItemBackground">
+    <ImageView
+        android:id="@+id/iv_owner_avatar"
+        android:layout_width="64dp"
+        android:layout_height="64dp"/>
     <TextView
         android:id="@+id/tv_repo_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/iv_owner_avatar"
+        android:layout_marginLeft="8dp"
+        android:singleLine="true"
+        android:ellipsize="middle"
         android:textSize="20sp" />
+    <TextView
+        android:id="@+id/tv_owner_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_repo_name"
+        android:layout_marginTop="8dp"
+
+        android:layout_toRightOf="@id/iv_owner_avatar"
+        android:layout_marginLeft="8dp"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#cccccc"
+        android:layout_below="@id/iv_owner_avatar"
+        android:layout_marginTop="8dp"/>
 </RelativeLayout>
