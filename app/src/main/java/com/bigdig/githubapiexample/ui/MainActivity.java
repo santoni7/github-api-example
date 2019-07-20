@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
 import com.arellomobile.mvp.presenter.InjectPresenter;
+import com.bigdig.githubapiexample.App;
 import com.bigdig.githubapiexample.R;
 import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 import com.bigdig.githubapiexample.ui.adapter.LocalRepoRecyclerAdapter;
@@ -26,7 +27,8 @@ public class MainActivity extends MvpAppCompatActivity
                             implements MainView, View.OnClickListener{
 
 
-    @InjectPresenter MainPresenter presenter;
+    @InjectPresenter
+    MainPresenter presenter;
 
     private RecyclerView rvRepos;
     private TextInputEditText etGithubLogin;

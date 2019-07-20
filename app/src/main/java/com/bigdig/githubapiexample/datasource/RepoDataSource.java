@@ -4,7 +4,8 @@ import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 import com.bigdig.githubapiexample.model.mapper.RepoToLocalRepoMapper;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 
@@ -12,15 +13,15 @@ import io.reactivex.Flowable;
  * Класс, который отвечает за получение, обработку, и сохранение репозиториев
  * Программа должна обращаться к нему, когда надо получить репозитории, а не отдельно к апи или базе
  */
-public class RepoDataRepository {
+public class RepoDataSource {
     private LocalRepoDataSource localRepoDataSource;
     private RemoteRepoDataSource remoteRepoDataSource;
 
-    public RepoDataRepository(LocalRepoDataSource localRepoDataSource, RemoteRepoDataSource remoteRepoDataSource) {
+    @Inject
+    public RepoDataSource(LocalRepoDataSource localRepoDataSource, RemoteRepoDataSource remoteRepoDataSource) {
         this.localRepoDataSource = localRepoDataSource;
         this.remoteRepoDataSource = remoteRepoDataSource;
     }
-
 
     @SuppressWarnings("Convert2MethodRef")
     public Flowable<List<LocalRepoAndOwner>> getReposByLogin(final String login){
@@ -30,7 +31,7 @@ public class RepoDataRepository {
                     return RepoToLocalRepoMapper.mapList(repoList);
                 })
                 // flatMap, потому что внутри у нас тоже Observable'ы (или Flowable'ы - не важно)
-                .switchMap(localRepoAndOwners -> {
+                .flatMap(localRepoAndOwners -> {
                     // Записать в базу все репозитории и владельца
                     return localRepoDataSource.insertAll(localRepoAndOwners)
                             // А потом считать их с базы данных

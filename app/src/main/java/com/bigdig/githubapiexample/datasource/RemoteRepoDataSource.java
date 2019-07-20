@@ -5,12 +5,15 @@ import com.bigdig.githubapiexample.model.Repo;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Flowable;
 
 public class RemoteRepoDataSource {
 
     private GithubApi githubApi;
 
+    @Inject
     public RemoteRepoDataSource(GithubApi githubApi) {
         this.githubApi = githubApi;
     }

@@ -6,6 +6,8 @@ import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
@@ -17,6 +19,7 @@ import io.reactivex.Flowable;
 public class LocalRepoDataSource {
     private LocalRepoDAO dao;
 
+    @Inject
     public LocalRepoDataSource(LocalRepoDAO dao){
         this.dao = dao;
     }
