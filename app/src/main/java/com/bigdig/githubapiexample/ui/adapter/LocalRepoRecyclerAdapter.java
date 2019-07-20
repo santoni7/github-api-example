@@ -1,4 +1,4 @@
-package com.bigdig.githubapiexample.ui;
+package com.bigdig.githubapiexample.ui.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,8 +10,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bigdig.githubapiexample.R;
-import com.bigdig.githubapiexample.model.Repo;
-import com.bigdig.githubapiexample.model.local.LocalRepo;
 import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;

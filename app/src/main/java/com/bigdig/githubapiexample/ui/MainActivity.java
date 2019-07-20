@@ -1,20 +1,19 @@
 package com.bigdig.githubapiexample.ui;
 
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bigdig.githubapiexample.App;
+import com.arellomobile.mvp.MvpAppCompatActivity;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bigdig.githubapiexample.R;
 import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
+import com.bigdig.githubapiexample.ui.adapter.LocalRepoRecyclerAdapter;
 import com.bigdig.githubapiexample.util.UIUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
@@ -22,26 +21,21 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
+public class MainActivity extends MvpAppCompatActivity
+                            implements MainView, View.OnClickListener{
 
 
-public class MainActivity extends AppCompatActivity
-                            implements View.OnClickListener{
-
-    private static final String TAG = "mLog";
+    @InjectPresenter MainPresenter presenter;
 
     private RecyclerView rvRepos;
     private TextInputEditText etGithubLogin;
     private View btGetRepos;
 
     private List<LocalRepoAndOwner> repoList = new ArrayList<>();
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private AlertDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +60,7 @@ public class MainActivity extends AppCompatActivity
                 .setView(R.layout.dialog_progress)
                 .show();
 
-        updateRepos(""); // Get all repos
+        presenter.onCreated();
     }
 
     @Override
@@ -74,50 +68,33 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()){
             case R.id.btn_get_repos:
                 String githubLogin = etGithubLogin.getText().toString();
-                updateRepos(githubLogin);
+                presenter.loadRepos(githubLogin);
                 UIUtils.hideKeyboard(this, this);
                 break;
         }
     }
 
-    public void updateRepos(String githubLogin){
-        // Очищаем наши предыдущие запросы, чтобы они не мешали друг другу
-        compositeDisposable.clear();
-        // Если пользователь ввел что-то, то отображаем только репозитории выбраного пользователя
-        // Если же пользователь оставил пустую строку - получаем с БД все репозитории что есть
-        Flowable<List<LocalRepoAndOwner>> reposFlowable;
-        if(!TextUtils.isEmpty(githubLogin)) {
-            reposFlowable = App.getInstance().getRepoDataRepository()
-                    .getReposByLogin(githubLogin);
-        } else {
-            reposFlowable = App.getInstance().getRepoDataRepository()
-                    .getAllLocalRepos();
-        }
+    @Override
+    public void showProgress(boolean show) {
+        if(show) progressDialog.show();
+        else progressDialog.hide();
+    }
 
-        progressDialog.show();
-        Disposable d = reposFlowable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(repoListResponse -> {
-                    progressDialog.hide();
+    @Override
+    public void showData(List<LocalRepoAndOwner> data) {
+        repoList.clear();
+        repoList.addAll(data);
+        rvRepos.getAdapter().notifyDataSetChanged();
+    }
 
-                    repoList.clear();
-                    repoList.addAll(repoListResponse);
-                    rvRepos.getAdapter().notifyDataSetChanged();
-                }, error -> {
-                    progressDialog.hide();
-
-                    repoList.clear();
-                    rvRepos.getAdapter().notifyDataSetChanged();
-                    Log.e("mLog", "Error: " + error.getMessage());
-                    Toast.makeText(MainActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-        compositeDisposable.add(d);
+    @Override
+    public void showError(String err) {
+        Toast.makeText(this, err, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onDestroy() {
-        compositeDisposable.clear();
+        presenter.onDestroy();
         super.onDestroy();
     }
 }
