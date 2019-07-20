@@ -4,6 +4,7 @@ import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 import com.bigdig.githubapiexample.model.mapper.RepoToLocalRepoMapper;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 
@@ -29,14 +30,16 @@ public class RepoDataRepository {
                     return RepoToLocalRepoMapper.mapList(repoList);
                 })
                 // flatMap, потому что внутри у нас тоже Observable'ы (или Flowable'ы - не важно)
-                .flatMap(localRepoAndOwners -> {
+                .switchMap(localRepoAndOwners -> {
                     // Записать в базу все репозитории и владельца
                     return localRepoDataSource.insertAll(localRepoAndOwners)
                             // А потом считать их с базы данных
                             .andThen(localRepoDataSource.getReposByLogin(login));
                 })
                 // На случай ошибки (например, нет интернета) - возвращаем то, что есть в бд
-                .onErrorResumeNext(localRepoDataSource.getReposByLogin(login));
+                .onErrorResumeNext(err -> {
+                    return localRepoDataSource.getReposByLogin(login);
+                });
     }
 
     public Flowable<List<LocalRepoAndOwner>> getAllLocalRepos(){

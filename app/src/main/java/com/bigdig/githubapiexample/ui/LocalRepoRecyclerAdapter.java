@@ -22,7 +22,6 @@ public class LocalRepoRecyclerAdapter extends RecyclerView.Adapter<LocalRepoRecy
 
     public LocalRepoRecyclerAdapter(List<LocalRepoAndOwner> repoList) {
         this.repoList = repoList;
-        setHasStableIds(true);
     }
 
     @NonNull
@@ -36,12 +35,7 @@ public class LocalRepoRecyclerAdapter extends RecyclerView.Adapter<LocalRepoRecy
     @Override
     public void onBindViewHolder(@NonNull RepoViewHolder repoViewHolder, int i) {
         LocalRepoAndOwner repo = repoList.get(i);
-        repoViewHolder.bind(repo);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return repoList.get(position).getRepo().getRepoId();
+        repoViewHolder.bind(repo, i);
     }
 
     @Override
@@ -52,15 +46,18 @@ public class LocalRepoRecyclerAdapter extends RecyclerView.Adapter<LocalRepoRecy
     public static class RepoViewHolder extends RecyclerView.ViewHolder {
         private TextView tvRepoName;
         private TextView tvOwnerName;
+        private TextView tvItemPos;
         private ImageView ivOwnerAva;
         public RepoViewHolder(@NonNull View itemView) {
             super(itemView);
             tvRepoName = itemView.findViewById(R.id.tv_repo_name);
             tvOwnerName = itemView.findViewById(R.id.tv_owner_name);
             ivOwnerAva = itemView.findViewById(R.id.iv_owner_avatar);
+            tvItemPos = itemView.findViewById(R.id.tv_item_pos);
         }
 
-        public void bind(LocalRepoAndOwner repoAndOwner) {
+        public void bind(LocalRepoAndOwner repoAndOwner, int position) {
+            tvItemPos.setText(String.valueOf(position + 1));
             tvRepoName.setText(repoAndOwner.getRepo().getName());
             tvOwnerName.setText(repoAndOwner.getOwner().getLogin());
             Glide.with(itemView)

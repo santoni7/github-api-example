@@ -31,11 +31,11 @@ public interface LocalRepoDAO {
     void updateOwner(LocalOwner owner);
 
     // Получаем с базы все репозитории и обьединяем с табличной пользователей по полю логин
-    @Query("SELECT LocalRepo.*, LocalOwner.* FROM LocalRepo JOIN LocalOwner ON LocalOwner.login=LocalRepo.ownerLogin")
+    @Query("SELECT LocalRepo.*, LocalOwner.* FROM LocalRepo JOIN LocalOwner ON LocalOwner.login=LocalRepo.ownerLogin ORDER BY LocalRepo.updatedAt DESC")
     Flowable<List<LocalRepoAndOwner>> selectAllRepos();
 
     // Получаем с базы все репозитории одного пользователя и обьединяем с табличкой пользователей по полю логин (в нижнем регистре, сделано через LOWER)
-    @Query("SELECT LocalRepo.*, LocalOwner.* FROM LocalRepo JOIN LocalOwner ON LocalOwner.login=LocalRepo.ownerLogin WHERE :userLogin LIKE LocalRepo.ownerLogin")
+    @Query("SELECT LocalRepo.*, LocalOwner.* FROM LocalRepo JOIN LocalOwner ON LocalOwner.login=LocalRepo.ownerLogin WHERE :userLogin LIKE LocalRepo.ownerLogin ORDER BY LocalRepo.updatedAt DESC")
     Flowable<List<LocalRepoAndOwner>> selectReposByLogin(String userLogin);
 
 
