@@ -1,30 +1,23 @@
 package com.bigdig.githubapiexample.ui;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
 import com.bigdig.githubapiexample.App;
 import com.bigdig.githubapiexample.R;
-import com.bigdig.githubapiexample.api.GithubService;
-import com.bigdig.githubapiexample.datasource.RepoDataRepository;
-import com.bigdig.githubapiexample.model.Repo;
-import com.bigdig.githubapiexample.model.local.LocalRepo;
 import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 import com.bigdig.githubapiexample.util.UIUtils;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +35,13 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "mLog";
 
     private RecyclerView rvRepos;
-    private EditText etGithubLogin;
-    private ImageButton btGetRepos;
+    private TextInputEditText etGithubLogin;
+    private View btGetRepos;
 
     private List<LocalRepoAndOwner> repoList = new ArrayList<>();
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private ProgressDialog progressDialog;
+    private AlertDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,8 +61,10 @@ public class MainActivity extends AppCompatActivity
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
         rvRepos.addItemDecoration(itemDecor);
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading...");
+        progressDialog = new MaterialAlertDialogBuilder(this)
+                .setCancelable(false)
+                .setView(R.layout.dialog_progress)
+                .show();
 
         updateRepos(""); // Get all repos
     }

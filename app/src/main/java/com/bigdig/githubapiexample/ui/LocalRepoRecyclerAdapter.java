@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bigdig.githubapiexample.R;
@@ -13,6 +14,7 @@ import com.bigdig.githubapiexample.model.Repo;
 import com.bigdig.githubapiexample.model.local.LocalRepo;
 import com.bigdig.githubapiexample.model.local.LocalRepoAndOwner;
 import com.bumptech.glide.Glide;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
 
@@ -44,12 +46,14 @@ public class LocalRepoRecyclerAdapter extends RecyclerView.Adapter<LocalRepoRecy
     }
 
     public static class RepoViewHolder extends RecyclerView.ViewHolder {
+        private RelativeLayout relativeLayout;
         private TextView tvRepoName;
         private TextView tvOwnerName;
         private TextView tvItemPos;
         private ImageView ivOwnerAva;
         public RepoViewHolder(@NonNull View itemView) {
             super(itemView);
+            relativeLayout = itemView.findViewById(R.id.relative_layout);
             tvRepoName = itemView.findViewById(R.id.tv_repo_name);
             tvOwnerName = itemView.findViewById(R.id.tv_owner_name);
             ivOwnerAva = itemView.findViewById(R.id.iv_owner_avatar);
@@ -63,6 +67,16 @@ public class LocalRepoRecyclerAdapter extends RecyclerView.Adapter<LocalRepoRecy
             Glide.with(itemView)
                     .load(repoAndOwner.getOwner().getAvatarUrl())
                     .into(ivOwnerAva);
+
+            relativeLayout.setOnClickListener(v -> {
+                new MaterialAlertDialogBuilder(itemView.getContext())
+                        .setTitle(repoAndOwner.getRepo().getFullName())
+                        .setMessage(repoAndOwner.getRepo().getGitUrl() + "\nUpdated at: " +
+                                repoAndOwner.getRepo().getUpdatedAt())
+                        .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+//                        .setView(R.layout.dialog_progress)
+                        .show();
+            });
         }
     }
 }
